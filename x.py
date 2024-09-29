@@ -21,18 +21,19 @@ f.write('<html><body>')
 f.write('<style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 50px;}</style>')
 
 # Overall info table
-f.write('<table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr>')
+f.write('<table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr>')
 f.write('<td>' + str(xp) + '</td>')
 f.write('<td>' + str(levelatxpn(xp)) + '</td>')
 f.write('<td>' + str(len(xp_per_hour)) + '</td>')
 f.write('<td>' + str(round(sum(xp_per_hour) / len(xp_per_hour), 2)) + '</td>')
+f.write('<td>' + start_date.strftime('%d %b %Y') + '</td>')
 f.write('<td>' + str(days_elapsed) + '</td>')
 f.write('<td>' + str(round(len(xp_per_hour) / days_elapsed, 2)) + '</td>')
 f.write('<td>' + str(round(xp / days_elapsed, 2)) + '</td>')
 f.write('</table>')
 
 # Info per series table
-f.write('<table><tr><td style="border: none;"><td>Completion</td><td>Expected Hours to Finish</td><td>Expected Date of Completion</td></tr>')
+f.write('<table><tr><td style="border: none;"><th>Completion</th><th>Expected Total Hours to Finish</th><th>Expected Date of Completion</th></tr>')
 def print_time_to_finish_series(name, required_level):
   hours_estimate = int((xptoleveln(required_level) / sum(xp_per_hour)) * len(xp_per_hour))
   f.write('<tr>')
@@ -49,7 +50,7 @@ print_time_to_finish_series('Metastises', 197)
 f.write('</tr></table></body></html>')
 
 # XP/Hour graph
-f.write('<table><tr><th colspan=' + str(len(xp_per_hour)) + '>XP Gained Each Hour</th></tr><tr>')
+f.write('<table><tr><th colspan=' + str(len(xp_per_hour)) + '>XP Gained Each Hour Played</th></tr><tr>')
 max = max(xp_per_hour)
 for h in xp_per_hour:
   colheight = (h / max) * 720
