@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 start_date = datetime(2024, 9, 27)
-xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666 ] 
+xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275 ] 
 xp = sum(xp_per_hour)
 
 def xptoleveln(n):
@@ -54,7 +54,7 @@ f.write('<table><tr><th colspan=' + str(len(xp_per_hour)) + '>XP Gained Each Hou
 max = max(xp_per_hour)
 for h in xp_per_hour:
   colheight = (h / max) * 720
-  f.write('<td style="height: 720px;">')
+  f.write('<td style="height: 720px; border: none;">')
   f.write('<div style="background-color:cornflowerblue; margin-top:' + str(720 - colheight) + ';height:' + str(colheight) + 'px;">' + str(h) + '</div>')
   f.write('</td>')
 f.write('</table>')
