@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 start_date = datetime(2024, 9, 27)
-xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170 ] 
+xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170, 216 ] 
 xp = sum(xp_per_hour)
 
 def xptoleveln(n):
