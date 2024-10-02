@@ -74,94 +74,103 @@ f.write('</div>')
 f.write(
 """<script>
 
-var xp_per_hour = """ + str(xp_per_hour) + """;
-var hours_played_each_day = """ + str(hours_played_each_day) + """;
-var cc = document.getElementById("canvasContainer");
-var c = document.getElementById("canvas");
-c.width = cc.offsetWidth;
-c.height = cc.offsetHeight;
-var cw = c.width - 40;
-var ch = c.height - 40;
-var ctx = c.getContext("2d");
-ctx.lineWidth = 5;
-ctx.font = "20px Arial";
-ctx.textBaseline = "middle";
-ctx.fillStyle = "#000000";
+function drawCanvas() {
+  var xp_per_hour = """ + str(xp_per_hour) + """;
+  var hours_played_each_day = """ + str(hours_played_each_day) + """;
+  var cc = document.getElementById("canvasContainer");
+  var c = document.getElementById("canvas");
+  c.width = cc.offsetWidth;
+  c.height = cc.offsetHeight;
+  var cw = c.width - 40;
+  var ch = c.height - 40;
+  var ctx = c.getContext("2d");
+  ctx.lineWidth = 5;
+  ctx.font = "20px Arial";
+  ctx.textBaseline = "middle";
 
-var stepx = cw / (xp_per_hour.length - 1);
-var max = Math.max(...xp_per_hour);
+  ctx.fillStyle = "#cccccc";
+  ctx.fillRect(0, 0, c.width, c.height);
 
-function calcWidth(i) {
-  return i * stepx + 20;
-}
+  ctx.fillStyle = "#000000";
 
-function calcHeight(xp) {
-  var r = xp / max;
-  return ch - r * ch + 20;
-}
+  var stepx = cw / (xp_per_hour.length - 1);
+  var max = Math.max(...xp_per_hour);
 
-function hslToRgb(h, s, l) {
-  let r, g, b;
-
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hueToRgb(p, q, h + 1/3);
-    g = hueToRgb(p, q, h);
-    b = hueToRgb(p, q, h - 1/3);
+  function calcWidth(i) {
+    return i * stepx + 20;
   }
 
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
+  function calcHeight(xp) {
+    var r = xp / max;
+    return ch - r * ch + 20;
+  }
 
-function hueToRgb(p, q, t) {
-  if (t < 0) t += 1;
-  if (t > 1) t -= 1;
-  if (t < 1/6) return p + (q - p) * 6 * t;
-  if (t < 1/2) return q;
-  if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-  return p;
-}
+  function hslToRgb(h, s, l) {
+    let r, g, b;
 
-var current_day = 0;
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hueToRgb(p, q, h + 1/3);
+      g = hueToRgb(p, q, h);
+      b = hueToRgb(p, q, h - 1/3);
+    }
 
-function getDayColor() {
-  var rgb = hslToRgb((current_day * 0.175) % 1.0 , 0.5, 0.5);
-  return '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
-}
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
 
-for (var i = 0; i < xp_per_hour.length; ++i) {
-  ctx.strokeStyle = getDayColor(i);
+  function hueToRgb(p, q, t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  }
+
+  var current_day = 0;
+
+  function getDayColor() {
+    var rgb = hslToRgb((current_day * 0.175) % 1.0 , 0.5, 0.5);
+    return '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+  }
+
+  for (var i = 0; i < xp_per_hour.length; ++i) {
+    ctx.strokeStyle = getDayColor(i);
+
+    ctx.beginPath();
+
+    var oi = i - 1 < 0 ? 0 : i - 1;
+    var ox = calcWidth(oi);
+    var oy = calcHeight(xp_per_hour[oi]);
+    ctx.moveTo(ox, oy); 
+
+    var x = calcWidth(i);
+    var y = calcHeight(xp_per_hour[i]);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    if (hours_played_each_day[current_day] <= 0) {
+      current_day++;
+    }
+    hours_played_each_day[current_day]--;
+  }
 
   ctx.beginPath();
-
-  var oi = i - 1 < 0 ? 0 : i - 1;
-  var ox = calcWidth(oi);
-  var oy = calcHeight(xp_per_hour[oi]);
-  ctx.moveTo(ox, oy); 
-
-  var x = calcWidth(i);
-  var y = calcHeight(xp_per_hour[i]);
-  ctx.lineTo(x, y);
-  ctx.stroke();
-
-  if (hours_played_each_day[current_day] <= 0) {
-    current_day++;
+  for (var i = 0; i < xp_per_hour.length; ++i) {
+    var x = calcWidth(i);
+    var y = calcHeight(xp_per_hour[i]);
+    var text = xp_per_hour[i].toString();
+    var textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, x - textWidth / 2, y);
   }
-  hours_played_each_day[current_day]--;
+  ctx.stroke();
 }
 
-ctx.beginPath();
-for (var i = 0; i < xp_per_hour.length; ++i) {
-  var x = calcWidth(i);
-  var y = calcHeight(xp_per_hour[i]);
-  var text = xp_per_hour[i].toString();
-  var textWidth = ctx.measureText(text).width;
-  ctx.fillText(text, x - textWidth / 2, y);
-}
-ctx.stroke();
+drawCanvas();
+window.addEventListener("resize", drawCanvas);
 
 </script>""")
 
