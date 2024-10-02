@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 
-start_date = datetime(2024, 9, 27)
-xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170, 216 ] 
+start_date = datetime(2024, 10, 2)
+xp_per_hour = [ ]
 xp = sum(xp_per_hour)
+hours_played_each_day = [ ]
 
 def xptoleveln(n):
   return 12.5 * n ** 2 + 62.5 * n - 75
@@ -14,49 +15,156 @@ def levelatxpn(n):
   return level
 
 days_elapsed = (datetime.now() - start_date).days + 1
-hours_per_day = len(xp_per_hour) / days_elapsed
+avg_hours_per_day = len(xp_per_hour) / days_elapsed
 
 f = open('index.html', 'w')
 f.write('<html><body>')
-f.write('<style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 50px;}</style>')
+f.write('<style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 30px;}</style>')
+f.write('<div style="display:flex; flex-flow:column; height:100%;">')
 
 # Overall info table
+f.write('<div>')
 f.write('<table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr>')
 f.write('<td>' + str(xp) + '</td>')
 f.write('<td>' + str(levelatxpn(xp)) + '</td>')
 f.write('<td>' + str(len(xp_per_hour)) + '</td>')
-f.write('<td>' + str(round(sum(xp_per_hour) / len(xp_per_hour), 2)) + '</td>')
+if (len(xp_per_hour) > 0):
+  f.write('<td>' + str(round(sum(xp_per_hour) / len(xp_per_hour), 2)) + '</td>')
+else:
+  f.write('<td>0</td>')
 f.write('<td>' + start_date.strftime('%d %b %Y') + '</td>')
 f.write('<td>' + str(days_elapsed) + '</td>')
 f.write('<td>' + str(round(len(xp_per_hour) / days_elapsed, 2)) + '</td>')
 f.write('<td>' + str(round(xp / days_elapsed, 2)) + '</td>')
 f.write('</table>')
+f.write('</div>')
 
 # Info per series table
+f.write('<div>')
 f.write('<table><tr><td style="border: none;"><th>Completion</th><th>Expected Total Hours to Finish</th><th>Expected Date of Completion</th></tr>')
 def print_time_to_finish_series(name, required_level):
-  hours_estimate = int((xptoleveln(required_level) / sum(xp_per_hour)) * len(xp_per_hour))
+  if sum(xp_per_hour) > 0:
+    hours_estimate = int((xptoleveln(required_level) / sum(xp_per_hour)) * len(xp_per_hour))
+    percentage = round((len(xp_per_hour) / hours_estimate) * 100.0, 2)
+  else:
+    hours_estimate = "?"
   f.write('<tr>')
   f.write('<th>' + name + '</th>')
-  percentage = round((len(xp_per_hour) / hours_estimate) * 100.0, 2)
-  f.write('<td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">' + str(percentage) + '%</div><div style="background-color:darkviolet; width:' + str(percentage) + '%;">&nbsp</div></div></td>')
+  if hours_estimate != "?":
+    f.write('<td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">' + str(percentage) + '%</div><div style="background-color:#4287f5; width:' + str(percentage) + '%;">&nbsp</div></div></td>')
+  else:
+    f.write('<td></td>')
   f.write('<td>' + str(hours_estimate) + '</td>')
-  f.write('<td>' + str((start_date + timedelta(days=hours_estimate / hours_per_day)).strftime('%d %b %Y')) + '</td>')
+  if hours_estimate != "?":
+    f.write('<td>' + str((start_date + timedelta(days=hours_estimate / avg_hours_per_day)).strftime('%d %b %Y')) + '</td>')
+  else:
+    f.write('<td></td>')
   f.write('</tr>')
-
 print_time_to_finish_series('Breaking Bad', 69)
 print_time_to_finish_series('Better Call Saul', 134)
 print_time_to_finish_series('Metastises', 197)
-f.write('</tr></table></body></html>')
+f.write('</tr></table>')
+f.write('</div>')
 
 # XP/Hour graph
-f.write('<table><tr><th colspan=' + str(len(xp_per_hour)) + '>XP Gained Each Hour Played</th></tr><tr>')
-max = max(xp_per_hour)
-for h in xp_per_hour:
-  colheight = (h / max) * 720
-  f.write('<td style="height: 720px; border: none;">')
-  f.write('<div style="background-color:cornflowerblue; margin-top:' + str(720 - colheight) + ';height:' + str(colheight) + 'px;">' + str(h) + '</div>')
-  f.write('</td>')
-f.write('</table>')
+f.write('<h3 style="text-align:center;">XP Gained Each Hour Played</h3>')
+f.write('<div id="canvasContainer" style="flex-grow:1;">')
+f.write('<canvas id="canvas" style="background-color:lightgrey;"></canvas>')
+f.write('</div>')
+f.write(
+"""<script>
 
+var xp_per_hour = """ + str(xp_per_hour) + """;
+var hours_played_each_day = """ + str(hours_played_each_day) + """;
+var cc = document.getElementById("canvasContainer");
+var c = document.getElementById("canvas");
+c.width = cc.offsetWidth;
+c.height = cc.offsetHeight;
+var cw = c.width - 40;
+var ch = c.height - 40;
+var ctx = c.getContext("2d");
+ctx.lineWidth = 5;
+ctx.font = "20px Arial";
+ctx.textBaseline = "middle";
+ctx.fillStyle = "#000000";
+
+var stepx = cw / (xp_per_hour.length - 1);
+var max = Math.max(...xp_per_hour);
+
+function calcWidth(i) {
+  return i * stepx + 20;
+}
+
+function calcHeight(xp) {
+  var r = xp / max;
+  return ch - r * ch + 20;
+}
+
+function hslToRgb(h, s, l) {
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hueToRgb(p, q, h + 1/3);
+    g = hueToRgb(p, q, h);
+    b = hueToRgb(p, q, h - 1/3);
+  }
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+function hueToRgb(p, q, t) {
+  if (t < 0) t += 1;
+  if (t > 1) t -= 1;
+  if (t < 1/6) return p + (q - p) * 6 * t;
+  if (t < 1/2) return q;
+  if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+  return p;
+}
+
+var current_day = 0;
+
+function getDayColor() {
+  var rgb = hslToRgb((current_day * 0.175) % 1.0 , 0.5, 0.5);
+  return '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+}
+
+for (var i = 0; i < xp_per_hour.length; ++i) {
+  ctx.strokeStyle = getDayColor(i);
+
+  ctx.beginPath();
+
+  var oi = i - 1 < 0 ? 0 : i - 1;
+  var ox = calcWidth(oi);
+  var oy = calcHeight(xp_per_hour[oi]);
+  ctx.moveTo(ox, oy); 
+
+  var x = calcWidth(i);
+  var y = calcHeight(xp_per_hour[i]);
+  ctx.lineTo(x, y);
+  ctx.stroke();
+
+  if (hours_played_each_day[current_day] <= 0) {
+    current_day++;
+  }
+  hours_played_each_day[current_day]--;
+}
+
+ctx.beginPath();
+for (var i = 0; i < xp_per_hour.length; ++i) {
+  var x = calcWidth(i);
+  var y = calcHeight(xp_per_hour[i]);
+  var text = xp_per_hour[i].toString();
+  var textWidth = ctx.measureText(text).width;
+  ctx.fillText(text, x - textWidth / 2, y);
+}
+ctx.stroke();
+
+</script>""")
+
+f.write('</div>')
+f.write('</body></html>')
 f.close()
