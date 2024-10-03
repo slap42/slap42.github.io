@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
-start_date = datetime(2024, 10, 2)
-xp_per_hour = [ ]
+start_date = datetime(2024, 10, 3)
+day_labels = [ "Oct 3" ]
+hours_played_each_day = [ 2 ]
+xp_per_hour = [ 405, 319 ]
 xp = sum(xp_per_hour)
-hours_played_each_day = [ ]
-day_labels = [ ]
 
 def xptoleveln(n):
   return 12.5 * n ** 2 + 62.5 * n - 75
@@ -95,13 +95,14 @@ function drawCanvas() {
 
   var stepx = cw / (xp_per_hour.length - 1);
   var max = Math.max(...xp_per_hour);
+  var min = Math.min(...xp_per_hour);
 
   function calcWidth(i) {
     return i * stepx + 20;
   }
 
   function calcHeight(xp) {
-    var r = xp / max;
+    var r = (xp - min) / (max - min);
     return ch - r * ch + 20;
   }
 
@@ -166,7 +167,7 @@ function drawCanvas() {
 
   current_day = -1;
   hrs_per_day = 0;
-  for (var i = 0; i < xp_per_hour.length; ++i) 
+  for (var i = 0; i < xp_per_hour.length; ++i) {
     var x = calcWidth(i);
     var y = calcHeight(xp_per_hour[i]);
 
@@ -174,18 +175,20 @@ function drawCanvas() {
       current_day++;
       hrs_per_day = 0;
 
-      var text = day_labels[current_day];
-      var textWidth = ctx.measureText(text).width;
+      if (current_day < day_labels.length) {
+        var text = day_labels[current_day];
+        var textWidth = ctx.measureText(text).width;
 
-      ctx.beginPath();
-      ctx.fillStyle = "#cccccc";
-      ctx.fillRect(x, y + 20, textWidth, 18);
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = "#cccccc";
+        ctx.fillRect(x, y + 20, textWidth, 18);
+        ctx.stroke();
 
-      ctx.beginPath();
-      ctx.fillStyle = getDayColor(i);
-      ctx.fillText(text, x, y + 30);
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = getDayColor(i);
+        ctx.fillText(text, x, y + 30);
+        ctx.stroke();
+      }
     }
     hrs_per_day++;
   }
