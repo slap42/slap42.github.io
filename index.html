@@ -1,15 +1,15 @@
-<html><body><style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 30px;}</style><div style="display:flex; flex-flow:column; height:100%;"><div><table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr><td>724</td><td>5</td><td>2</td><td>362.0</td><td>03 Oct 2024</td><td>1</td><td>2.0</td><td>724.0</td></table></div><div><table><tr><td style="border: none;"><th>Completion</th><th>Expected Total Hours to Finish</th><th>Expected Date of Completion</th></tr><tr><th>Breaking Bad</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">1.14%</div><div style="background-color:#4287f5; width:1.14%;">&nbsp</div></div></td><td>176</td><td>30 Dec 2024</td></tr><tr><th>Better Call Saul</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">0.31%</div><div style="background-color:#4287f5; width:0.31%;">&nbsp</div></div></td><td>642</td><td>20 Aug 2025</td></tr><tr><th>Metastises</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">0.15%</div><div style="background-color:#4287f5; width:0.15%;">&nbsp</div></div></td><td>1373</td><td>20 Aug 2026</td></tr></tr></table></div><h3 style="text-align:center;">XP Gained Each Hour Played</h3><div id="canvasContainer" style="flex-grow:1;"><canvas id="canvas" style="background-color:lightgrey;"></canvas></div><script>
+<html><body><style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 30px;}</style><div style="display:flex; flex-flow:column; height:100%;"><div><table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr><td>7005</td><td>21</td><td>20</td><td>341.85</td><td>03 Oct 2024</td><td>2</td><td>10.0</td><td>3502.5</td></table></div><div><table><tr><td style="border: none;"><th>Completion</th><th>Expected Total Hours to Finish</th><th>Expected Date of Completion</th></tr><tr><th>Breaking Bad</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">10.75%</div><div style="background-color:#4287f5; width:10.75%;">&nbsp</div></div></td><td>186</td><td>21 Oct 2024</td></tr><tr><th>Better Call Saul</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">2.94%</div><div style="background-color:#4287f5; width:2.94%;">&nbsp</div></div></td><td>680</td><td>10 Dec 2024</td></tr><tr><th>Metastises</th><td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">1.38%</div><div style="background-color:#4287f5; width:1.38%;">&nbsp</div></div></td><td>1454</td><td>25 Feb 2025</td></tr></tr></table></div><h3 style="text-align:center;">XP Gained Each Hour Played</h3><div id="canvasContainer" style="flex-grow:1;"><canvas id="canvas" style="background-color:lightgrey;"></canvas></div><script>
 
 function drawCanvas() {
-  var xp_per_hour = [405, 319];
-  var hours_played_each_day = [2];
-  var day_labels = ['Oct 3'];
+  var xp_per_hour = [536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170, 216];
+  var hours_played_each_day = [2, 3, 6, 2, 1, 3, 4, 5];
+  var day_labels = ['Oct 3', 'Oct 4', 'Oct 5', 'Oct 6', 'Oct 7', 'Oct 8', 'Oct 9', 'Oct 10'];
   var cc = document.getElementById("canvasContainer");
   var c = document.getElementById("canvas");
   c.width = cc.offsetWidth;
   c.height = cc.offsetHeight;
   var cw = c.width - 40;
-  var ch = c.height - 40;
+  var ch = c.height - 60;
   var ctx = c.getContext("2d");
   ctx.lineWidth = 5;
   ctx.font = "20px Arial";
@@ -106,12 +106,12 @@ function drawCanvas() {
 
         ctx.beginPath();
         ctx.fillStyle = "#cccccc";
-        ctx.fillRect(x, y + 20, textWidth, 18);
+        ctx.fillRect(x, y + 10, textWidth, 18);
         ctx.stroke();
 
         ctx.beginPath();
         ctx.fillStyle = getDayColor(i);
-        ctx.fillText(text, x, y + 30);
+        ctx.fillText(text, x, y + 20);
         ctx.stroke();
       }
     }

@@ -1,10 +1,21 @@
+# removeallitems
+
+# Vampire buffs to remove
+# player.removespell ...
+# 000f5b54
+# 0010f1e7
+# 000ed0a8
+# 000ed09e
+# 0010fb30
+# 000ed0a3
+
 from datetime import datetime, timedelta
 
 start_date = datetime(2024, 10, 3)
-day_labels = [ "Oct 3" ]
-hours_played_each_day = [ 2 ]
-xp_per_hour = [ 405, 319 ]
-xp = sum(xp_per_hour)
+day_labels = [ "Oct 3", "Oct 4", "Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10" ]
+hours_played_each_day = [ 2, 3, 6, 2, 1, 3, 4, 5 ]
+xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170, 216 ] 
+xp = sum(xp_per_hour) + 26 + 16 + 17 + 16 + 17 + 16 + 16 + 27 + 17
 
 def xptoleveln(n):
   return 12.5 * n ** 2 + 62.5 * n - 75
@@ -84,7 +95,7 @@ function drawCanvas() {
   c.width = cc.offsetWidth;
   c.height = cc.offsetHeight;
   var cw = c.width - 40;
-  var ch = c.height - 40;
+  var ch = c.height - 60;
   var ctx = c.getContext("2d");
   ctx.lineWidth = 5;
   ctx.font = "20px Arial";
@@ -181,12 +192,12 @@ function drawCanvas() {
 
         ctx.beginPath();
         ctx.fillStyle = "#cccccc";
-        ctx.fillRect(x, y + 20, textWidth, 18);
+        ctx.fillRect(x, y + 10, textWidth, 18);
         ctx.stroke();
 
         ctx.beginPath();
         ctx.fillStyle = getDayColor(i);
-        ctx.fillText(text, x, y + 30);
+        ctx.fillText(text, x, y + 20);
         ctx.stroke();
       }
     }
