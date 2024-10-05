@@ -1,4 +1,4 @@
-# removeallitems
+# player.removeallitems
 
 # Vampire buffs to remove
 # player.removespell ...
@@ -11,11 +11,13 @@
 
 from datetime import datetime, timedelta
 
-start_date = datetime(2024, 10, 3)
-day_labels = [ "Oct 3", "Oct 4", "Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9", "Oct 10" ]
-hours_played_each_day = [ 2, 3, 6, 2, 1, 3, 4, 5 ]
-xp_per_hour = [ 536, 363, 290, 306, 527, 451, 666, 493, 131, 172, 275, 316, 221, 381, 302, 323, 119, 579, 170, 216 ] 
-xp = sum(xp_per_hour) + 26 + 16 + 17 + 16 + 17 + 16 + 16 + 27 + 17
+xp_this_hour = sum([  ])
+print("xp_this_hour: " + str(xp_this_hour))
+start_date = datetime(2024, 10, 5)
+day_labels = [ "Oct 5" ]
+hours_played_each_day = [ 4 ]
+xp_per_hour = [ 526, 274, 318, 780 ]
+xp = sum(xp_per_hour) + xp_this_hour
 
 def xptoleveln(n):
   return 12.5 * n ** 2 + 62.5 * n - 75
