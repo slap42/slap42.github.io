@@ -11,13 +11,25 @@
 
 from datetime import datetime, timedelta
 
-xp_this_hour = sum([  ])
-print("xp_this_hour: " + str(xp_this_hour))
-start_date = datetime(2024, 10, 5)
-day_labels = [ "Oct 5" ]
-hours_played_each_day = [ 4 ]
-xp_per_hour = [ 526, 274, 318, 780 ]
+# XP
+xp_this_hour = sum([ 30,  ])
+xp_per_hour = [ 412, 565 ]
+
+# Dates played
+start_date = datetime(2024, 10, 9)
+day_labels = [ datetime(2024, 10, 9) ]
+hours_played_each_day = [ 2 ]
+
+# To be filled on completion of a sub-challenge
+dates_completed = {
+  # "Breaking Bad" : datetime(2025, 2, 17),
+  }
+hours_completed = {
+  # "Breaking Bad" : 127,
+  }
+
 xp = sum(xp_per_hour) + xp_this_hour
+print("xp_this_hour: " + str(xp_this_hour))
 
 def xptoleveln(n):
   return 12.5 * n ** 2 + 62.5 * n - 75
@@ -38,9 +50,10 @@ f.write('<div style="display:flex; flex-flow:column; height:100%;">')
 
 # Overall info table
 f.write('<div>')
-f.write('<table><tr><th>XP</th><th>Current Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr>')
+f.write('<table><tr><th>XP</th><th>Current Level</th><th>XP to Next Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr>')
 f.write('<td>' + str(xp) + '</td>')
 f.write('<td>' + str(levelatxpn(xp)) + '</td>')
+f.write('<td>' + str(-int(xp - xptoleveln(levelatxpn(xp) + 1))) + '</td>')
 f.write('<td>' + str(len(xp_per_hour)) + '</td>')
 if (len(xp_per_hour) > 0):
   f.write('<td>' + str(round(sum(xp_per_hour) / len(xp_per_hour), 2)) + '</td>')
@@ -55,32 +68,46 @@ f.write('</div>')
 
 # Info per series table
 f.write('<div>')
-f.write('<table><tr><td style="border: none;"><th>Completion</th><th>Expected Total Hours to Finish</th><th>Expected Date of Completion</th></tr>')
-def print_time_to_finish_series(name, required_level):
+f.write('<table><tr><td style="border: none;"><th>XP to Complete</th><th colspan=2>Completion</th><th>Hours to Complete</th><th>Date of Completion</th></tr>')
+def print_time_to_finish_series(name, required_level, color):
+  percentage = 0
   if sum(xp_per_hour) > 0:
     hours_estimate = int((xptoleveln(required_level) / sum(xp_per_hour)) * len(xp_per_hour))
-    percentage = round((len(xp_per_hour) / hours_estimate) * 100.0, 2)
+    percentage = min(round((len(xp_per_hour) / hours_estimate) * 100.0, 2), 100)
+    if percentage == 100: hours_estimate = 0
   else:
     hours_estimate = "?"
   f.write('<tr>')
   f.write('<th>' + name + '</th>')
+  f.write('<td>' + str(int(xptoleveln(required_level))) + '</td>')
+  f.write('<td>' + str(percentage) + '%</td>')
   if hours_estimate != "?":
-    f.write('<td style="width: 1000px;"><div style="background-color:lightgrey; width:100%;"><div style="float:left; margin-left:50%; margin-top:15px;">' + str(percentage) + '%</div><div style="background-color:#4287f5; width:' + str(percentage) + '%;">&nbsp</div></div></td>')
+    f.write('<td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:' + color + '; width:' + str(percentage) + '%;">&nbsp</div></div></td>')
   else:
     f.write('<td></td>')
-  f.write('<td>' + str(hours_estimate) + '</td>')
+  if name in hours_completed:
+    f.write('<td>' + str(hours_completed[name]) + '</td>')
+  else:
+    f.write('<td>' + str(hours_estimate) + ' (Est.)</td>')
   if hours_estimate != "?":
-    f.write('<td>' + str((start_date + timedelta(days=hours_estimate / avg_hours_per_day)).strftime('%d %b %Y')) + '</td>')
+    if name in dates_completed:
+      f.write('<td>' + str((dates_completed[name]).strftime('%d %b %Y')) + '</td>')
+    else:
+      f.write('<td>' + str((start_date + timedelta(days=hours_estimate / avg_hours_per_day)).strftime('%d %b %Y')) + ' (Est.)</td>')
   else:
     f.write('<td></td>')
   f.write('</tr>')
-print_time_to_finish_series('Breaking Bad', 69)
-print_time_to_finish_series('Better Call Saul', 134)
-print_time_to_finish_series('Metastises', 197)
+print_time_to_finish_series('Breaking Bad', 69, "#369457")
+print_time_to_finish_series('Better Call Saul', 137, "#ab5454")
+print_time_to_finish_series('Metastises', 200, "#fcba03")
 f.write('</tr></table>')
 f.write('</div>')
 
 # XP/Hour graph
+day_labels_str = []
+for d in day_labels:
+  day_labels_str.append(d.strftime('%d %b %Y'))
+
 f.write('<h3 style="text-align:center;">XP Gained Each Hour Played</h3>')
 f.write('<div id="canvasContainer" style="flex-grow:1;">')
 f.write('<canvas id="canvas" style="background-color:lightgrey;"></canvas>')
@@ -91,7 +118,7 @@ f.write(
 function drawCanvas() {
   var xp_per_hour = """ + str(xp_per_hour) + """;
   var hours_played_each_day = """ + str(hours_played_each_day) + """;
-  var day_labels = """ + str(day_labels) + """;
+  var day_labels = """ + str(day_labels_str) + """;
   var cc = document.getElementById("canvasContainer");
   var c = document.getElementById("canvas");
   c.width = cc.offsetWidth;
