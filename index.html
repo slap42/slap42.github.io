@@ -1,9 +1,9 @@
-<html><body><style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 30px;}</style><div style="display:flex; flex-flow:column; height:100%;"><div><table><tr><th>XP</th><th>Current Level</th><th>XP to Next Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr><td>1326</td><td>8</td><td>174</td><td>3</td><td>442.0</td><td>09 Oct 2024</td><td>2</td><td>1.5</td><td>663.0</td></table></div><div><table><tr><td style="border: none;"><th>XP to Complete</th><th colspan=2>Completion</th><th>Hours to Complete</th><th>Date of Completion</th></tr><tr><th>Breaking Bad</th><td>63750</td><td>2.08%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#369457; width:2.08%;">&nbsp</div></div></td><td>144 (Est.)</td><td>13 Jan 2025 (Est.)</td></tr><tr><th>Better Call Saul</th><td>243100</td><td>0.55%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#ab5454; width:0.55%;">&nbsp</div></div></td><td>550 (Est.)</td><td>10 Oct 2025 (Est.)</td></tr><tr><th>Metastises</th><td>512425</td><td>0.26%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#fcba03; width:0.26%;">&nbsp</div></div></td><td>1159 (Est.)</td><td>20 Nov 2026 (Est.)</td></tr></tr></table></div><h3 style="text-align:center;">XP Gained Each Hour Played</h3><div id="canvasContainer" style="flex-grow:1;"><canvas id="canvas" style="background-color:lightgrey;"></canvas></div><script>
+<html><body><style>body { font-family:Arial; } th, td { border: 1px solid; } table { width: 100%; text-align: center; margin-bottom: 30px;}</style><div style="display:flex; flex-flow:column; height:100%;"><div><table><tr><th>XP</th><th>Current Level</th><th>XP to Next Level</th><th>Hours Played</th><th>Avg. XP / Hour</th><th>Run Start Date</th><th>Days Elapsed</th><th>Avg. Hours / Day</th><th>Avg. XP / Day</th></tr><td>3212</td><td>13</td><td>38</td><td>7</td><td>452.0</td><td>09 Oct 2024</td><td>3</td><td>2.33</td><td>1070.67</td></table></div><div><table><tr><td style="border: none;"><th>XP to Complete</th><th colspan=2>Completion</th><th>Hours to Complete</th><th>Date of Completion</th></tr><tr><th>Breaking Bad</th><td>63750</td><td>4.96%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#369457; width:4.96%;">&nbsp</div></div></td><td>141 (Est.)</td><td>08 Dec 2024 (Est.)</td></tr><tr><th>Better Call Saul</th><td>243100</td><td>1.3%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#ab5454; width:1.3%;">&nbsp</div></div></td><td>537 (Est.)</td><td>27 May 2025 (Est.)</td></tr><tr><th>Metastises</th><td>512425</td><td>0.62%</td><td style="width: 1000px;"><div style="background-color:lightgrey; height:100%; width:100%;"><div style="background-color:#fcba03; width:0.62%;">&nbsp</div></div></td><td>1133 (Est.)</td><td>06 Feb 2026 (Est.)</td></tr></tr></table></div><h3 style="text-align:center;">XP Gained Each Hour Played</h3><div id="canvasContainer" style="flex-grow:1;"><canvas id="canvas" style="background-color:lightgrey;"></canvas></div><script>
 
 function drawCanvas() {
-  var xp_per_hour = [412, 565, 349];
-  var hours_played_each_day = [2, 1];
-  var day_labels = ['09 Oct 2024', '10 Oct 2024'];
+  var xp_per_hour = [412, 565, 349, 402, 598, 375, 463];
+  var hours_played_each_day = [2, 4, 1];
+  var day_labels = ['09 Oct 2024', '10 Oct 2024', '11 Oct 2024'];
   var cc = document.getElementById("canvasContainer");
   var c = document.getElementById("canvas");
   c.width = cc.offsetWidth;
@@ -18,12 +18,12 @@ function drawCanvas() {
   ctx.fillStyle = "#cccccc";
   ctx.fillRect(0, 0, c.width, c.height);
 
-  var stepx = cw / (xp_per_hour.length - 1);
+  var stepx = cw / (xp_per_hour.length);
   var max = Math.max(...xp_per_hour);
   var min = Math.min(...xp_per_hour);
 
   function calcWidth(i) {
-    return i * stepx + 20;
+    return (i + 1) * stepx + 20;
   }
 
   function calcHeight(xp) {
@@ -62,13 +62,22 @@ function drawCanvas() {
     hours_played_each_day[0]--;
   }
 
-  function getDayColor() {
-    var rgb = hslToRgb((current_day * 0.417) % 1.0, 0.5, 0.5);
-    return '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+  function getDayColor(day) {
+    var rgb = hslToRgb((day * 0.417) % 1.0, 0.5, 0.5);
+    var color = '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+    return color;
+  }
+
+  if (xp_per_hour.length > 0) {
+    ctx.beginPath();
+    ctx.strokeStyle = getDayColor(0);
+    ctx.moveTo(calcWidth(-1), calcHeight(min)); 
+    ctx.lineTo(calcWidth(0), calcHeight(xp_per_hour[0]));
+    ctx.stroke();
   }
 
   for (var i = 0; i < xp_per_hour.length; ++i) {
-    ctx.strokeStyle = getDayColor(i);
+    ctx.strokeStyle = getDayColor(current_day);
 
     ctx.beginPath();
 
@@ -85,7 +94,7 @@ function drawCanvas() {
     if (current_day == -1 || hrs_per_day >= hours_played_each_day[current_day]) {
       current_day++;
       hrs_per_day = 0;
-      ctx.fillStyle = getDayColor(i);
+      ctx.fillStyle = getDayColor(current_day);
     }
     hrs_per_day++;
   }
@@ -93,10 +102,14 @@ function drawCanvas() {
   current_day = -1;
   hrs_per_day = 0;
   for (var i = 0; i < xp_per_hour.length; ++i) {
-    var x = calcWidth(i);
-    var y = calcHeight(xp_per_hour[i]);
-
     if (current_day == -1 || hrs_per_day >= hours_played_each_day[current_day]) {
+      var x = calcWidth(i);
+      var y = calcHeight(xp_per_hour[i]);
+      if (current_day == -1) {
+        x = calcWidth(-1);
+        y = calcHeight(min);
+      }
+
       current_day++;
       hrs_per_day = 0;
 
@@ -110,11 +123,12 @@ function drawCanvas() {
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.fillStyle = getDayColor(i);
+        ctx.fillStyle = getDayColor(current_day);
         ctx.fillText(text, x, y + 20);
         ctx.stroke();
       }
     }
+
     hrs_per_day++;
   }
 
@@ -123,7 +137,7 @@ function drawCanvas() {
   for (var i = 0; i < xp_per_hour.length; ++i) {
     var x = calcWidth(i);
     var y = calcHeight(xp_per_hour[i]);
-    var text = xp_per_hour[i].toString();
+    var text = xp_per_hour[i];
     var textWidth = ctx.measureText(text).width;
     ctx.fillText(text, x - textWidth / 2, y);
   }

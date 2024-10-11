@@ -12,16 +12,17 @@
 from datetime import datetime, timedelta
 
 # XP
-xp_this_hour = sum([  ])
-xp_per_hour = [ 412, 565, 349 ]
+xp_this_hour = sum([ 48,  ])
+xp_per_hour = [ 412, 565, 349, 402, 598, 375, 463 ]
 
 # Dates played
 start_date = datetime(2024, 10, 9)
 day_labels = [
   datetime(2024, 10, 9),
   datetime(2024, 10, 10),
+  datetime(2024, 10, 11),
   ]
-hours_played_each_day = [ 2, 1 ]
+hours_played_each_day = [ 2, 4, 1 ]
 
 # To be filled on completion of a sub-challenge
 dates_completed = {
@@ -136,12 +137,12 @@ function drawCanvas() {
   ctx.fillStyle = "#cccccc";
   ctx.fillRect(0, 0, c.width, c.height);
 
-  var stepx = cw / (xp_per_hour.length - 1);
+  var stepx = cw / (xp_per_hour.length);
   var max = Math.max(...xp_per_hour);
   var min = Math.min(...xp_per_hour);
 
   function calcWidth(i) {
-    return i * stepx + 20;
+    return (i + 1) * stepx + 20;
   }
 
   function calcHeight(xp) {
@@ -180,13 +181,22 @@ function drawCanvas() {
     hours_played_each_day[0]--;
   }
 
-  function getDayColor() {
-    var rgb = hslToRgb((current_day * 0.417) % 1.0, 0.5, 0.5);
-    return '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+  function getDayColor(day) {
+    var rgb = hslToRgb((day * 0.417) % 1.0, 0.5, 0.5);
+    var color = '#' + rgb[0].toString(16) + rgb[1].toString(16) + rgb[2].toString(16);
+    return color;
+  }
+
+  if (xp_per_hour.length > 0) {
+    ctx.beginPath();
+    ctx.strokeStyle = getDayColor(0);
+    ctx.moveTo(calcWidth(-1), calcHeight(min)); 
+    ctx.lineTo(calcWidth(0), calcHeight(xp_per_hour[0]));
+    ctx.stroke();
   }
 
   for (var i = 0; i < xp_per_hour.length; ++i) {
-    ctx.strokeStyle = getDayColor(i);
+    ctx.strokeStyle = getDayColor(current_day);
 
     ctx.beginPath();
 
@@ -203,7 +213,7 @@ function drawCanvas() {
     if (current_day == -1 || hrs_per_day >= hours_played_each_day[current_day]) {
       current_day++;
       hrs_per_day = 0;
-      ctx.fillStyle = getDayColor(i);
+      ctx.fillStyle = getDayColor(current_day);
     }
     hrs_per_day++;
   }
@@ -211,10 +221,14 @@ function drawCanvas() {
   current_day = -1;
   hrs_per_day = 0;
   for (var i = 0; i < xp_per_hour.length; ++i) {
-    var x = calcWidth(i);
-    var y = calcHeight(xp_per_hour[i]);
-
     if (current_day == -1 || hrs_per_day >= hours_played_each_day[current_day]) {
+      var x = calcWidth(i);
+      var y = calcHeight(xp_per_hour[i]);
+      if (current_day == -1) {
+        x = calcWidth(-1);
+        y = calcHeight(min);
+      }
+
       current_day++;
       hrs_per_day = 0;
 
@@ -228,11 +242,12 @@ function drawCanvas() {
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.fillStyle = getDayColor(i);
+        ctx.fillStyle = getDayColor(current_day);
         ctx.fillText(text, x, y + 20);
         ctx.stroke();
       }
     }
+
     hrs_per_day++;
   }
 
@@ -241,7 +256,7 @@ function drawCanvas() {
   for (var i = 0; i < xp_per_hour.length; ++i) {
     var x = calcWidth(i);
     var y = calcHeight(xp_per_hour[i]);
-    var text = xp_per_hour[i].toString();
+    var text = xp_per_hour[i];
     var textWidth = ctx.measureText(text).width;
     ctx.fillText(text, x - textWidth / 2, y);
   }
