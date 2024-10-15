@@ -12,14 +12,14 @@
 from datetime import datetime, timedelta
 
 # XP
-xp_this_hour = sum([  ])
+xp_this_hour = sum([ 83, 62, 84,  ])
 xp_per_hour = [ 
   412, 565, 
   349, 402, 598, 375, 
   463, 530, 493, 298, 401, 266, 322,
   484, 285, 313,
   316, 554, 439, 268, 182,
-  400, 
+  400, 209, 297, 
   ]
 
 # Dates played
@@ -32,7 +32,7 @@ day_labels = [
   datetime(2024, 10, 14),
   datetime(2024, 10, 15),
   ]
-hours_played_each_day = [ 2, 4, 7, 3, 5, 1, ]
+hours_played_each_day = [ 2, 4, 7, 3, 5, 3, ]
 
 # To be filled on completion of a sub-challenge
 dates_completed = {
