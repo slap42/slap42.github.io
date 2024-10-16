@@ -12,7 +12,7 @@
 from datetime import datetime, timedelta
 
 # XP
-xp_this_hour = sum([ 49,  ])
+xp_this_hour = sum([  ])
 xp_per_hour = [ 
   [ 412, 565, ],
   [ 349, 402, 598, 375, ],
@@ -20,7 +20,7 @@ xp_per_hour = [
   [ 484, 285, 313, ],
   [ 316, 554, 439, 268, 182, ],
   [ 400, 209, 297, 365, ],
-  [ 313, 494, 212, ]
+  [ 313, 494, 212, 314, ]
   ]
 
 # Dates played
