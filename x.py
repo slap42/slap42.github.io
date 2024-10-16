@@ -12,27 +12,31 @@
 from datetime import datetime, timedelta
 
 # XP
-xp_this_hour = sum([ 83, 62, 84,  ])
+xp_this_hour = sum([ 49,  ])
 xp_per_hour = [ 
-  412, 565, 
-  349, 402, 598, 375, 
-  463, 530, 493, 298, 401, 266, 322,
-  484, 285, 313,
-  316, 554, 439, 268, 182,
-  400, 209, 297, 
+  [ 412, 565, ],
+  [ 349, 402, 598, 375, ],
+  [ 463, 530, 493, 298, 401, 266, 322, ],
+  [ 484, 285, 313, ],
+  [ 316, 554, 439, 268, 182, ],
+  [ 400, 209, 297, 365, ],
+  [ 313, 494, 212, ]
   ]
 
 # Dates played
 start_date = datetime(2024, 10, 9)
 day_labels = [
-  datetime(2024, 10, 9),
+  datetime(2024, 10,  9),
   datetime(2024, 10, 10),
   datetime(2024, 10, 11),
   datetime(2024, 10, 13),
   datetime(2024, 10, 14),
   datetime(2024, 10, 15),
+  datetime(2024, 10, 16),
   ]
-hours_played_each_day = [ 2, 4, 7, 3, 5, 3, ]
+hours_played_each_day = [ ]
+for x in xp_per_hour:
+  hours_played_each_day.append(len(x))
 
 # To be filled on completion of a sub-challenge
 dates_completed = {
@@ -42,7 +46,16 @@ hours_completed = {
   # "Breaking Bad" : 127,
   }
 
-xp = sum(xp_per_hour) + xp_this_hour
+sum_xp_per_hour = 0
+for x in xp_per_hour:
+  sum_xp_per_hour += sum(x)
+xp = xp_this_hour + sum_xp_per_hour
+
+xp_per_hour_arr = []
+for x in xp_per_hour:
+  for y in x:
+    xp_per_hour_arr.append(y)
+
 print("xp_this_hour: " + str(xp_this_hour))
 
 def xptoleveln(n):
@@ -68,14 +81,14 @@ f.write('<table><tr><th>XP</th><th>Current Level</th><th>XP to Next Level</th><t
 f.write('<td>' + str(xp) + '</td>')
 f.write('<td>' + str(levelatxpn(xp)) + '</td>')
 f.write('<td>' + str(-int(xp - xptoleveln(levelatxpn(xp) + 1))) + '</td>')
-f.write('<td>' + str(len(xp_per_hour)) + '</td>')
-if (len(xp_per_hour) > 0):
-  f.write('<td>' + str(round(sum(xp_per_hour) / len(xp_per_hour), 2)) + '</td>')
+f.write('<td>' + str(len(xp_per_hour_arr)) + '</td>')
+if (len(xp_per_hour_arr) > 0):
+  f.write('<td>' + str(round(sum_xp_per_hour / len(xp_per_hour_arr), 2)) + '</td>')
 else:
   f.write('<td>0</td>')
 f.write('<td>' + start_date.strftime('%d %b %Y') + '</td>')
 f.write('<td>' + str(days_elapsed) + '</td>')
-f.write('<td>' + str(round(len(xp_per_hour) / days_elapsed, 2)) + '</td>')
+f.write('<td>' + str(round(len(xp_per_hour_arr) / days_elapsed, 2)) + '</td>')
 f.write('<td>' + str(round(xp / days_elapsed, 2)) + '</td>')
 f.write('</table>')
 f.write('</div>')
@@ -85,9 +98,9 @@ f.write('<div>')
 f.write('<table><tr><td style="border: none;"><th>XP to Complete</th><th colspan=2>Completion</th><th>Hours to Complete</th><th>Date of Completion</th></tr>')
 def print_time_to_finish_series(name, required_level, color):
   percentage = 0
-  if sum(xp_per_hour) > 0:
-    hours_estimate = int((xptoleveln(required_level) / sum(xp_per_hour)) * len(xp_per_hour))
-    percentage = min(round((len(xp_per_hour) / hours_estimate) * 100.0, 2), 100)
+  if sum_xp_per_hour > 0:
+    hours_estimate = int((xptoleveln(required_level) / sum_xp_per_hour) * len(xp_per_hour_arr))
+    percentage = min(round((len(xp_per_hour_arr) / hours_estimate) * 100.0, 2), 100)
     if percentage == 100: hours_estimate = 0
   else:
     hours_estimate = "?"
@@ -130,7 +143,7 @@ f.write(
 """<script>
 
 function drawCanvas() {
-  var xp_per_hour = """ + str(xp_per_hour) + """;
+  var xp_per_hour = """ + str(xp_per_hour_arr) + """;
   var hours_played_each_day = """ + str(hours_played_each_day) + """;
   var day_labels = """ + str(day_labels_str) + """;
   var cc = document.getElementById("canvasContainer");
